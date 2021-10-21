@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class Cannon {
     int x, y, w, h;
+    int counter = 0, delay = 30;
     float angle;
     String type;
 
@@ -22,7 +23,12 @@ public class Cannon {
     }
 
     void update(){
-        angle += 10f; // useless for now, but it'll be funny later when we forget about it hahaha
+        if(counter++ > delay) { if(!Main.zombies.isEmpty()) fire(); counter = 0; }
+        angle += 10f;
+    }
+
+    void fire(){
+        Main.bullets.add(new Bullet("bbb", x + w / 2, y + h / 2));
     }
 
     int gridlock(int n){
