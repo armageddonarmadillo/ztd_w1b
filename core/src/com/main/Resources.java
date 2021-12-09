@@ -13,6 +13,7 @@ public class Resources {
     static Texture button_cannon_double = new Texture(Gdx.files.internal("doubleCannonIcon.png"));
     static Texture button_cannon_laser = new Texture(Gdx.files.internal("laserCannonIcon.png"));
     static Texture button_cannon_mounted = new Texture(Gdx.files.internal("mountedCannonIcon.png"));
+    static Texture button_cannon_missile = new Texture(Gdx.files.internal("cannon_missile_icon.png"));
     static Texture button_play = new Texture(Gdx.files.internal("play.png"));
     static Texture button_pause = new Texture(Gdx.files.internal("pause.png"));
     static Texture button_start = new Texture(Gdx.files.internal("startButton.png"));
@@ -31,6 +32,7 @@ public class Resources {
     static Texture cannon_double = new Texture(Gdx.files.internal("doubleCannon.png"));
     static Texture cannon_laser = new Texture(Gdx.files.internal("laserCannon.png"));
     static Texture cannon_mounted = new Texture(Gdx.files.internal("mountedCannon.png"));
+    static Texture cannon_missile = new Texture(Gdx.files.internal("cannon_missile.png"));
 
     // TODO: Zombies
     static Texture zombie = new Texture(Gdx.files.internal("Zombies.png"));
@@ -39,12 +41,22 @@ public class Resources {
     static Texture zombie_speedy = new Texture(Gdx.files.internal("speedy_zombie.png"));
     static Texture zombie_riot = new Texture(Gdx.files.internal("riotzombieBIG.png"));
 
-    // TODO: Penguins
-    static Texture penguin_cool = new Texture(Gdx.files.internal("penguin_cool.png")); //he has sunglasses, he's cool OK
+    // TODO: Misc
+    static Texture penguin_cool = new Texture(Gdx.files.internal("penguin_cool.png"));
+    static Texture archer = new Texture(Gdx.files.internal("archer.png"));
 
     // TODO: Bullets
     static Texture bullet = new Texture(Gdx.files.internal("Bullet.png"));
+    static Texture bullet_missile = new Texture(Gdx.files.internal("missile.png"));
+    static Texture bullet_fire = new Texture(Gdx.files.internal("firebullet.png"));
+    static Texture bullet_super = new Texture(Gdx.files.internal("superbullet.png"));
+    static Texture bullet_wizard_red = new Texture(Gdx.files.internal("wizard_red_spell.png"));
 
     //TODO: Sounds
     static Sound sfx_bullet = Gdx.audio.newSound(Gdx.files.internal("Bullet.mp3"));
+
+    //TODO: Effects
+    static Texture click_effect = new Texture(Gdx.files.internal("click_effect.png"));
+    static Texture vortex = new Texture(Gdx.files.internal("vortex.png"));
+    static Texture boom = new Texture(Gdx.files.internal("boom.png"));
 }

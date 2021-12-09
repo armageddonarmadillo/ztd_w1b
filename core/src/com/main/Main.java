@@ -12,15 +12,17 @@ public class Main extends ApplicationAdapter {
 	// GAME VARIABLES
 	SpriteBatch batch;
 	Random r;
-	String current_type = "ccc";
 
 	// CONTROL VARIABLES
+	String current_type = "archer";
+	boolean pause = false;
 
 	// GAME LISTS
 	static ArrayList<Zombie> zombies = new ArrayList<Zombie>();
 	static ArrayList<Cannon> cannons = new ArrayList<Cannon>();
 	static ArrayList<Button> buttons = new ArrayList<Button>();
 	static ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+	static ArrayList<Effect> effects = new ArrayList<Effect>();
 
 	@Override
 	public void create () {
@@ -40,16 +42,20 @@ public class Main extends ApplicationAdapter {
 		for(Cannon c : cannons) c.draw(batch);
 		for(Button b : buttons) b.draw(batch);
 		for(Bullet b : bullets) b.draw(batch);
+		for(Effect e : effects) e.draw(batch);
 		batch.end();
 	}
 
 	void update(){
 		tap(); //first in update
 		spawn_zombies();
-		for(Zombie z : zombies) z.update();
-		for(Cannon c : cannons) c.update();
-		for(Button b : buttons) b.update();
-		for(Bullet b : bullets) b.update();
+		if (!pause){
+			for(Zombie z : zombies) z.update();
+			for(Cannon c : cannons) c.update();
+			for(Button b : buttons) b.update();
+			for(Bullet b : bullets) b.update();
+			for(Effect e : effects) e.update();
+		}
 		housekeeping(); //last in update
 	}
 
@@ -57,9 +63,15 @@ public class Main extends ApplicationAdapter {
 		if(Gdx.input.justTouched()){
 			int x = Gdx.input.getX(), y = Gdx.graphics.getHeight() - Gdx.input.getY();
 
+			effects.add(new Effect("boom", x, y));
+
 			for(Button b : buttons) {
 				if (b.gethitbox().contains(x, y)) {
-					System.out.println(b.type);
+					if(b.type.equals("pause") || b.type.equals("play")){
+						pause = !pause;
+						b.type = pause ? "play" : "pause";
+						return;
+					}
 					if (b.locked) {
 						if (b.t.hidden) {
 							hidett();
@@ -74,10 +86,10 @@ public class Main extends ApplicationAdapter {
 						current_type = b.type;
 					}
 					return;
-				} else {
-					if(b.t.close.gethitbox().contains(x, y) && !b.t.hidden) { hidett(); return; }
-					if(b.t.gethitbox().contains(x, y) && !b.t.hidden) return;
-					if(!b.t.gethitbox().contains(x, y) && !b.t.hidden) { hidett(); return; }
+				} else if (!b.t.hidden){
+					if(b.t.close.gethitbox().contains(x, y)) { hidett(); return; }
+					if(b.t.gethitbox().contains(x, y)) return;
+					if(!b.t.gethitbox().contains(x, y)) hidett();
 				}
 			}
 
@@ -107,23 +119,31 @@ public class Main extends ApplicationAdapter {
 
 		//make some buttons
 		buttons.add(new Button("cannon", buttons.size() * 75 + 200, 525));
+		buttons.get(buttons.size() - 1).locked = false;
+		buttons.get(buttons.size() - 1).selected = true;
 		buttons.add(new Button("double", buttons.size() * 75 + 200, 525));
 		buttons.add(new Button("super", buttons.size() * 75 + 200, 525));
 		buttons.add(new Button("fire", buttons.size() * 75 + 200, 525));
 		buttons.add(new Button("laser", buttons.size() * 75 + 200, 525));
+		buttons.add(new Button("missile", buttons.size() * 75 + 200, 525));
 
+		//pause button
+		buttons.add(new Button("pause", 1024 - 75, 525));
+		buttons.get(buttons.size() - 1).locked = false;
+		buttons.get(buttons.size() - 1).selected = false;
 	}
 
 	void housekeeping(){
-		for(Zombie z : zombies) if(!z.active) { zombies.remove(z); break; }
+		for(Zombie z : zombies) if(!z.active) { effects.add(new Effect("click", z.x + z.w / 2, z.y + z.h / 2)); zombies.remove(z); break; }
 		for(Bullet b : bullets) if(!b.active) { bullets.remove(b); break; }
+		for(Effect e : effects) if(!e.active) { effects.remove(e); break; }
 	}
 
 	void spawn_zombies(){
 		if(!zombies.isEmpty()) return;
 		UI.wave++;
 		for(int i = 0; i < 5 * UI.wave; i++){
-			zombies.add(new Zombie("speedy", 1024 + i * 50, r.nextInt(450)));
+			zombies.add(new Zombie("bob", 1024 + i * 50, r.nextInt(450)));
 		}
 	}
 

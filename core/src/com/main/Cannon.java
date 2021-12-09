@@ -1,5 +1,6 @@
 package com.main;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -17,17 +18,20 @@ public class Cannon {
     Animation anim;
     TextureRegion[] frames;
     TextureRegion frame;
+    TextureRegion last_frame;
     float frame_time = 0.2f;
 
     Cannon(String type, int x, int y){
         this.type = type;
         sprite = new Sprite(Tables.cannon_resources.get(type) == null ? Resources.cannon : Tables.cannon_resources.get(type));
-        w = Tables.cannon_resources.get(type) == null ? 50 : Tables.cannon_resources.get(type).getWidth();
-        h = Tables.cannon_resources.get(type) == null ? 50 : Tables.cannon_resources.get(type).getHeight();
+        rows = 1;
+        cols = Tables.balance.get("cols_"+type) == null ? 1 : Tables.balance.get("cols_"+type);
+        w = (Tables.cannon_resources.get(type) == null ? Resources.cannon : Tables.cannon_resources.get(type)).getWidth() / cols;
+        h = (Tables.cannon_resources.get(type) == null ? Resources.cannon : Tables.cannon_resources.get(type)).getHeight() / rows;
         delay = Tables.balance.get("delay_"+type) == null ? 30 : Tables.balance.get("delay_"+type);
         this.x = gridlock(x - w / 2);
         this.y = gridlock(y - h / 2);
-        sprite.setPosition(this.x, this.y);
+        init_animations();
     }
 
     void draw(SpriteBatch batch){
@@ -35,18 +39,34 @@ public class Cannon {
     }
 
     void update(){
-        if(counter++ > delay) { if(!Main.zombies.isEmpty()) fire(); counter = 0; }
+        if(!type.equals("laser") && counter++ > delay) { if(!Main.zombies.isEmpty()) fire(); counter = 0; }
+        if(type.equals("laser") && check_frame()) if(!Main.zombies.isEmpty()) fire();
+        frame_time += Gdx.graphics.getDeltaTime();
+        frame = (TextureRegion)anim.getKeyFrame(frame_time, true);
+        sprite = new Sprite(frame);
+        sprite.setPosition(this.x, this.y);
         sprite.setRotation(calc_angle());
     }
 
+    boolean check_frame(){
+        return (last_frame == (TextureRegion)anim.getKeyFrame(frame_time, true));
+    }
+
     float calc_angle(){
-        float zx = Main.zombies.get(0).x + (float)Main.zombies.get(0).w / 2, zy = Main.zombies.get(0).y + (float)Main.zombies.get(0).h / 2;
+        Zombie closest = null;
+        for(Zombie z : Main.zombies){
+            if(closest == null) { closest = z; continue; }
+            float hyp_closest = (float)Math.sqrt(((x - closest.x) * (x - closest.x)) + ((y - closest.y) * (y - closest.y)));
+            float hyp_z = (float)Math.sqrt(((x - z.x) * (x - z.x)) + ((y - z.y) * (y - z.y)));
+            if(hyp_z < hyp_closest) closest = z;
+        }
+        float zx = closest.x + (float)closest.w / 2, zy = closest.y + (float)closest.h / 2;
         return (float)Math.toDegrees(Math.atan((y - zy)/(x - zx)) + (x >= zx ? Math.PI : 0));
     }
 
     void fire(){
         Resources.sfx_bullet.play(0.2f);
-        Main.bullets.add(new Bullet("bbb", x + w / 2, y + h / 2));
+        Main.bullets.add(new Bullet(type, x + w / 2, y + h / 2));
     }
 
     int gridlock(int n){
@@ -56,7 +76,7 @@ public class Cannon {
     void init_animations(){
         // split texture into individual cells
         TextureRegion[][] sheet =
-                TextureRegion.split(Tables.zombie_resources.get(type) == null ? Resources.zombie : Tables.zombie_resources.get(type), w, h);
+                TextureRegion.split((Tables.cannon_resources.get(type) == null ? Resources.cannon : Tables.cannon_resources.get(type)), w, h);
         // init numbers of frames to maximum number possible (all rows * all cols)
         frames = new TextureRegion[rows * cols];
         //loop through the texture sheet and fill frames array with cells (in order)
@@ -66,6 +86,7 @@ public class Cannon {
                 frames[index++] = sheet[r][c];
         //initialize the animation object
         anim = new Animation(frame_time, frames);
+        if(type.equals("laser")) last_frame = (TextureRegion)anim.getKeyFrames()[anim.getKeyFrames().length - 6];
     }
 
     Rectangle gethitbox(){ return new Rectangle(x, y, w, h); }

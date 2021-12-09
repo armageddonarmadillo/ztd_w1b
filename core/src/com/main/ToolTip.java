@@ -28,12 +28,11 @@ public class ToolTip{
         if(hidden) return;
         batch.draw(Resources.tooltip_bg, x, y, w, h);
         close.draw(batch);
-
-        String[] words = "Fires some bullets at some rate of fire.".split(" ");
-        int rx = 35, ry = 5; //relative position of the text to the position of the tooltip
+        String[] words = (Tables.tooltips.get(type) == null ? "No information available..." : Tables.tooltips.get(type)).split(" ");
+        int rx = 25, ry = 5; //relative position of the text to the position of the tooltip
         for(String s : words){
             if(rx + layout.width >= w - 25){
-                rx = 35;
+                rx = 25;
                 ry += layout.height + 5;
             }
             font.setColor(Color.MAROON);
@@ -41,6 +40,18 @@ public class ToolTip{
             layout.setText(font, " " + s);
             rx += layout.width;
         }
+
+        font.getData().setScale(1.5f);
+        font.setColor(Color.BLACK);
+        font.draw(batch, "Unlock: " + (Tables.balance.get("unlock_"+type) == null ? 0 : Tables.balance.get("unlock_"+type)), x + 35 + 1, y + 45 - 1);
+        font.setColor(Color.GOLD);
+        font.draw(batch, "Unlock: " + (Tables.balance.get("unlock_"+type) == null ? 0 : Tables.balance.get("unlock_"+type)), x + 35, y + 45);
+        font.getData().setScale(1.0f);
+
+        font.setColor(Color.WHITE);
+        font.draw(batch, "(tap again to unlock)", x + 35 + 1, y + 15 - 1);
+        font.setColor(Color.BLACK);
+        font.draw(batch, "(tap again to unlock)", x + 35, y + 15);
     }
 
     Rectangle gethitbox(){ return new Rectangle(x, y, w, h); }
