@@ -35,6 +35,7 @@ public class Tables {
         button_resources.put("start", Resources.button_start);
         button_resources.put("exit", Resources.button_exit);
         button_resources.put("close", Resources.button_close);
+        button_resources.put("wall", Resources.button_wall);
 
         zombie_resources.put("fast", Resources.zombie_fast);
         zombie_resources.put("dif", Resources.zombie_dif);
@@ -81,6 +82,10 @@ public class Tables {
         //zombie healths
         balance.put("hp_fast", 4);
         balance.put("hp_riot", 10);
+        balance.put("hp_fire", 150);
+        balance.put("hp_double", 200);
+        balance.put("hp_super", 2500);
+        balance.put("hp_laser", 10000);
 
         //animation variables
         balance.put("cols_speedy", 6);

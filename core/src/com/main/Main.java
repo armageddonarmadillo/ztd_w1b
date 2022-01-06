@@ -14,7 +14,7 @@ public class Main extends ApplicationAdapter {
 	Random r;
 
 	// CONTROL VARIABLES
-	String current_type = "archer";
+	String current_type = "cannon";
 	boolean pause = false;
 
 	// GAME LISTS
@@ -23,6 +23,7 @@ public class Main extends ApplicationAdapter {
 	static ArrayList<Button> buttons = new ArrayList<Button>();
 	static ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	static ArrayList<Effect> effects = new ArrayList<Effect>();
+	static ArrayList<Wall> walls = new ArrayList<Wall>();
 
 	@Override
 	public void create () {
@@ -43,6 +44,7 @@ public class Main extends ApplicationAdapter {
 		for(Button b : buttons) b.draw(batch);
 		for(Bullet b : bullets) b.draw(batch);
 		for(Effect e : effects) e.draw(batch);
+		for(Wall e : walls) e.draw(batch);
 		batch.end();
 	}
 
@@ -54,8 +56,9 @@ public class Main extends ApplicationAdapter {
 			for(Cannon c : cannons) c.update();
 			for(Button b : buttons) b.update();
 			for(Bullet b : bullets) b.update();
-			for(Effect e : effects) e.update();
+			for(Wall e : walls) e.update();
 		}
+		for(Effect e : effects) e.update();
 		housekeeping(); //last in update
 	}
 
@@ -77,6 +80,9 @@ public class Main extends ApplicationAdapter {
 							hidett();
 							b.t.hidden = false;
 						} else {
+							if(UI.money >= (Tables.balance.get("unlock_"+b.type) == null ? 0 : (Tables.balance.get("unlock_"+b.type))))
+								UI.money -= (Tables.balance.get("unlock_"+b.type) == null ? 0 : (Tables.balance.get("unlock_"+b.type)));
+								else return;
 							b.locked = false;
 							b.t.hidden = true;
 						}
@@ -92,7 +98,10 @@ public class Main extends ApplicationAdapter {
 					if(!b.t.gethitbox().contains(x, y)) hidett();
 				}
 			}
-
+			if(walls.size() < 3 && (current_type.equals("wall") || current_type.equals("mounted"))) {
+				walls.add(new Wall(x, 0, current_type.equals("mounted")));
+				return;
+			}
 			for(Cannon c : cannons) if(c.gethitbox().contains(x, y)) return;
 			if(buildable(x, y)) if(UI.money >= (Tables.balance.get("cost_"+current_type) == null ? 10 : Tables.balance.get("cost_"+current_type))) {
 				UI.money -= (Tables.balance.get("cost_"+current_type) == null ? 10 : Tables.balance.get("cost_"+current_type));
@@ -126,6 +135,10 @@ public class Main extends ApplicationAdapter {
 		buttons.add(new Button("fire", buttons.size() * 75 + 200, 525));
 		buttons.add(new Button("laser", buttons.size() * 75 + 200, 525));
 		buttons.add(new Button("missile", buttons.size() * 75 + 200, 525));
+		buttons.add(new Button("wall", buttons.size() * 75 + 200, 525));
+		buttons.get(buttons.size() - 1).locked = false;
+		buttons.get(buttons.size() - 1).selected = false;
+		buttons.add(new Button("mounted", buttons.size() * 75 + 200, 525));
 
 		//pause button
 		buttons.add(new Button("pause", 1024 - 75, 525));
@@ -137,6 +150,8 @@ public class Main extends ApplicationAdapter {
 		for(Zombie z : zombies) if(!z.active) { effects.add(new Effect("click", z.x + z.w / 2, z.y + z.h / 2)); zombies.remove(z); break; }
 		for(Bullet b : bullets) if(!b.active) { bullets.remove(b); break; }
 		for(Effect e : effects) if(!e.active) { effects.remove(e); break; }
+		for(Cannon c : cannons) if(!c.active) { cannons.remove(c); break; }
+		for(Wall e : walls) if(!e.active) { walls.remove(e); break; }
 	}
 
 	void spawn_zombies(){

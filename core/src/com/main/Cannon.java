@@ -9,9 +9,10 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class Cannon {
     Sprite sprite;
-    int x, y, w, h;
+    int x, y, w, h, hp, mhp;
     int counter = 0, delay;
     String type;
+    boolean active = true;
 
     //Animation Variables
     int rows, cols;
@@ -28,14 +29,21 @@ public class Cannon {
         cols = Tables.balance.get("cols_"+type) == null ? 1 : Tables.balance.get("cols_"+type);
         w = (Tables.cannon_resources.get(type) == null ? Resources.cannon : Tables.cannon_resources.get(type)).getWidth() / cols;
         h = (Tables.cannon_resources.get(type) == null ? Resources.cannon : Tables.cannon_resources.get(type)).getHeight() / rows;
+        hp = Tables.balance.get("hp_"+type) == null ? 100 : Tables.balance.get("hp_"+type);
+        mhp = hp;
         delay = Tables.balance.get("delay_"+type) == null ? 30 : Tables.balance.get("delay_"+type);
         this.x = gridlock(x - w / 2);
         this.y = gridlock(y - h / 2);
         init_animations();
+        frame = (TextureRegion)anim.getKeyFrame(frame_time, true);
+        sprite = new Sprite(frame);
+        sprite.setPosition(this.x, this.y);
     }
 
     void draw(SpriteBatch batch){
         sprite.draw(batch);
+        batch.draw(Resources.red_bar, x, y - 5, w, 5);
+        batch.draw(Resources.green_bar, x, y - 5, hp * ((float)w / (float)mhp), 5);
     }
 
     void update(){
@@ -46,6 +54,7 @@ public class Cannon {
         sprite = new Sprite(frame);
         sprite.setPosition(this.x, this.y);
         sprite.setRotation(calc_angle());
+        active = hp-- > 0;
     }
 
     boolean check_frame(){
@@ -65,6 +74,13 @@ public class Cannon {
     }
 
     void fire(){
+        if(type.equals("double")){
+            Resources.sfx_bullet.play(0.2f);
+            Main.bullets.add(new Bullet(type, x + w / 2, y + h / 4));
+            Resources.sfx_bullet.play(0.2f);
+            Main.bullets.add(new Bullet(type, x + w / 2, y + (h / 4) * 3));
+            return;
+        }
         Resources.sfx_bullet.play(0.2f);
         Main.bullets.add(new Bullet(type, x + w / 2, y + h / 2));
     }

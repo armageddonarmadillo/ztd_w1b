@@ -35,7 +35,7 @@ public class Bullet {
         x += Math.cos(angle) * speed;
         y += Math.sin(angle) * speed;
         sprite.setPosition(x, y);
-        dt += Math.cos(angle) * speed + Math.sin(angle) * speed;
+        dt += Math.abs(Math.cos(angle)) * speed + Math.abs(Math.sin(angle)) * speed;
         active = dt < md;
         hitzombie();
     }
