@@ -22,7 +22,7 @@ public class Zombie {
         this.type = type;
         this.x = x;
         this.y = y;
-        speed = Tables.balance.get("speed_"+type) == null ? 1 : Tables.balance.get("speed_"+type);
+        speed = Tables.balance.get("speed_"+type) == null ? 5 : Tables.balance.get("speed_"+type);
         hp = Tables.balance.get("hp_"+type) == null ? 5 : Tables.balance.get("hp_"+type);
         mhp = hp;
         rows = 1;

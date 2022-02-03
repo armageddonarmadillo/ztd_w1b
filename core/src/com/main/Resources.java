@@ -2,6 +2,8 @@ package com.main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 
 public class Resources {
@@ -61,4 +63,21 @@ public class Resources {
     static Texture click_effect = new Texture(Gdx.files.internal("click_effect.png"));
     static Texture vortex = new Texture(Gdx.files.internal("vortex.png"));
     static Texture boom = new Texture(Gdx.files.internal("boom.png"));
+
+    //TODO: Predefined Textures
+    static Texture red = createTexture(Color.RED);
+    static Texture green = createTexture(Color.GREEN);
+    static Texture tan = createTexture(Color.TAN);
+
+    //TODO: Methods
+    static Texture createTexture(Color color){
+        Pixmap p = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        p.setColor(color);
+        p.fillRectangle(0, 0, 1, 1);
+        return new Texture(p);
+    }
+
+    static Color inverse_color(Color color){
+        return new Color(1f - color.r, 1f - color.g, 1f - color.b, 1f);
+    }
 }

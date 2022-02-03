@@ -44,7 +44,7 @@ public class Bullet {
 
     float calc_angle(){
         Zombie closest = null;
-        for(Zombie z : Main.zombies){
+        for(Zombie z : Game.zombies){
             if(closest == null) { closest = z; continue; }
             float hyp_closest = (float)Math.sqrt(((x - closest.x) * (x - closest.x)) + ((y - closest.y) * (y - closest.y)));
             float hyp_z = (float)Math.sqrt(((x - z.x) * (x - z.x)) + ((y - z.y) * (y - z.y)));
@@ -55,8 +55,8 @@ public class Bullet {
     }
 
     void hitzombie(){
-        if(Main.zombies.isEmpty()) return;
-        for(Zombie z : Main.zombies) {
+        if(Game.zombies.isEmpty()) return;
+        for(Zombie z : Game.zombies) {
             if(z.gethitbox().contains(hitbox())){
                 z.hp--;
                 this.active = false;

@@ -28,11 +28,12 @@ public class Wall {
             c.update();
             if(!c.active) {cannons.remove(c); break;}
         }
+        hitzombie();
         active = hp > 0;
     }
 
     int gridlock(int n){
-        return ((int)((n + 25) / 50) * 50);
+        return ((int)((n) / 50) * 50);
     }
 
     void draw(SpriteBatch b){
@@ -41,4 +42,14 @@ public class Wall {
     }
 
     Rectangle gethitbox(){ return new Rectangle(x, y, w, h); }
+
+    void hitzombie(){
+        if(Game.zombies.isEmpty()) return;
+        for(Zombie z : Game.zombies) {
+            if(gethitbox().contains(z.x, z.y)){
+                z.active = false;
+                hp--;
+            }
+        }
+    }
 }
